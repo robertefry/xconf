@@ -1,2 +1,2 @@
 # xstart
-Configure and manage Xorg sessions.
+Configure and manage persistent Xorg sessions.
