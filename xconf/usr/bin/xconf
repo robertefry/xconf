@@ -4,17 +4,39 @@ version="1.0"
 
 flush()
 {
-	echo "flush"
+	for config in /etc/X11/xorg.conf.d/*.conf; do
+		if [[ $(readlink $config) == /usr/lib/xconf/config/* ]]; then
+			if [[ $_arg_verbose == "on" ]]; then printf '\t--> %s\n' "flushing $config"; fi
+			sudo unlink $config
+		fi
+	done
 }
 
 remove_config()
 {
-	echo "remove"
+	for config in /etc/X11/xorg.conf.d/*.conf; do
+		if [[ $(readlink $config) == /usr/lib/xconf/config/$1/* ]]; then
+			if [[ $_arg_verbose == "on" ]]; then printf '\t--> %s\n' "unlinking $config"; fi
+			sudo unlink $config
+		fi
+	done
 }
 
 add_config()
 {
-	echo "add"
+	for config in /usr/lib/xconf/config/$1/*.conf; do
+		if [[ $_arg_verbose == "on" ]]; then printf '\t--> %s\n' "linking $config"; fi
+		sudo ln -s $config /etc/X11/xorg.conf.d/
+	done
+}
+
+print_config_options()
+{
+	printf '%s\n' "Configuration groups include:"
+	cd /usr/lib/xconf/config
+	for config in */; do
+		printf '\t%s\n' $config
+	done
 }
 
 # Created by argbash-init v2.8.0
@@ -22,7 +44,8 @@ add_config()
 # ARG_OPTIONAL_REPEATED([remove],[r],[Remove configuration files from Xorg config cache],[])
 # ARG_OPTIONAL_BOOLEAN([startx],[x],[Start an Xorg session],[off])
 # ARG_OPTIONAL_BOOLEAN([flush],[f],[Flush Xorg config cache of files added by xconf],[off])
-# ARG_VERBOSE([v])
+# ARG_OPTIONAL_BOOLEAN([verbose],[v],[Set verbose output],[off])
+# ARG_OPTIONAL_ACTION([options],[o],[Print configuration options],[print_config_options])
 # ARG_HELP([Configure and manage Xorg sessions. Version $version])
 # ARGBASH_GO()
 # needed because of Argbash --> m4_ignore([
@@ -43,7 +66,7 @@ die()
 
 begins_with_short_option()
 {
-	local first_option all_short_options='arxfvh'
+	local first_option all_short_options='arxfvoh'
 	first_option="${1:0:1}"
 	test "$all_short_options" = "${all_short_options/$first_option/}" && return 1 || return 0
 }
@@ -53,18 +76,19 @@ _arg_add=()
 _arg_remove=()
 _arg_startx="off"
 _arg_flush="off"
-_arg_verbose=0
+_arg_verbose="off"
 
 
 print_help()
 {
 	printf '%s\n' "Configure and manage Xorg sessions. Version $version"
-	printf 'Usage: %s [-a|--add <arg>] [-r|--remove <arg>] [-x|--(no-)startx] [-f|--(no-)flush] [-v|--verbose] [-h|--help]\n' "$0"
-	printf '\t%s\n' "-a, --add:     Add configuration files to Xorg config cache (empty by default)"
-	printf '\t%s\n' "-r, --remove:  Remove configuration files from Xorg config cache (empty by default)"
-	printf '\t%s\n' "-x, --startx:  Start an Xorg session (off by default)"
-	printf '\t%s\n' "-f, --flush:   Flush Xorg config cache of files added by xconf (off by default)"
-	printf '\t%s\n' "-v, --verbose: Set verbose output (can be specified multiple times to increase the effect)"
+	printf 'Usage: %s [-a|--add <arg>] [-r|--remove <arg>] [-x|--(no-)startx] [-f|--(no-)flush] [-v|--(no-)verbose] [-o|--options] [-h|--help]\n' "$0"
+	printf '\t%s\n' "-a, --add:     Add configuration files to Xorg config cache"
+	printf '\t%s\n' "-r, --remove:  Remove configuration files from Xorg config cache"
+	printf '\t%s\n' "-x, --startx:  Start an Xorg session"
+	printf '\t%s\n' "-f, --flush:   Flush Xorg config cache of files added by xconf"
+	printf '\t%s\n' "-v, --verbose: Set verbose output"
+	printf '\t%s\n' "-o, --options: Prints configuration options"
 	printf '\t%s\n' "-h, --help:    Prints help"
 }
 
@@ -121,16 +145,25 @@ parse_commandline()
 					begins_with_short_option "$_next" && shift && set -- "-f" "-${_next}" "$@" || die "The short option '$_key' can't be decomposed to ${_key:0:2} and -${_key:2}, because ${_key:0:2} doesn't accept value and '-${_key:2:1}' doesn't correspond to a short option."
 				fi
 				;;
-			-v|--verbose)
-				_arg_verbose=$((_arg_verbose + 1))
+			-v|--no-verbose|--verbose)
+				_arg_verbose="on"
+				test "${1:0:5}" = "--no-" && _arg_verbose="off"
 				;;
 			-v*)
-				_arg_verbose=$((_arg_verbose + 1))
+				_arg_verbose="on"
 				_next="${_key##-v}"
 				if test -n "$_next" -a "$_next" != "$_key"
 				then
 					begins_with_short_option "$_next" && shift && set -- "-v" "-${_next}" "$@" || die "The short option '$_key' can't be decomposed to ${_key:0:2} and -${_key:2}, because ${_key:0:2} doesn't accept value and '-${_key:2:1}' doesn't correspond to a short option."
 				fi
+				;;
+			-o|--options)
+				print_config_options
+				exit 0
+				;;
+			-o*)
+				print_config_options
+				exit 0
 				;;
 			-h|--help)
 				print_help

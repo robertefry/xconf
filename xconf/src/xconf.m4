@@ -5,7 +5,8 @@ version="1.0"
 flush()
 {
 	for config in /etc/X11/xorg.conf.d/*.conf; do
-		if [[[ $(readlink $config) == /usr/lib/xstart/config/* ]]]; then
+		if [[[ $(readlink $config) == /usr/lib/xconf/config/* ]]]; then
+			if [[[ $_arg_verbose == "on" ]]]; then printf '\t--> %s\n' "flushing $config"; fi
 			sudo unlink $config
 		fi
 	done
@@ -14,7 +15,8 @@ flush()
 remove_config()
 {
 	for config in /etc/X11/xorg.conf.d/*.conf; do
-		if [[[ $(readlink $config) == /usr/lib/xstart/config/$1/* ]]]; then
+		if [[[ $(readlink $config) == /usr/lib/xconf/config/$1/* ]]]; then
+			if [[[ $_arg_verbose == "on" ]]]; then printf '\t--> %s\n' "unlinking $config"; fi
 			sudo unlink $config
 		fi
 	done
@@ -22,7 +24,19 @@ remove_config()
 
 add_config()
 {
-	sudo ln -s /usr/lib/xstart/config/$1/*.conf /etc/X11/xorg.conf.d/
+	for config in /usr/lib/xconf/config/$1/*.conf; do
+		if [[[ $_arg_verbose == "on" ]]]; then printf '\t--> %s\n' "linking $config"; fi
+		sudo ln -s $config /etc/X11/xorg.conf.d/
+	done
+}
+
+print_config_options()
+{
+	printf '%s\n' "Configuration groups include:"
+	cd /usr/lib/xconf/config
+	for config in */; do
+		printf '\t%s\n' $config
+	done
 }
 
 # m4_ignore(
@@ -32,7 +46,8 @@ exit 11  #)Created by argbash-init v2.8.0
 # ARG_OPTIONAL_REPEATED([remove], [r], [Remove configuration files from Xorg config cache], [])
 # ARG_OPTIONAL_BOOLEAN([startx], [x], [Start an Xorg session], [off])
 # ARG_OPTIONAL_BOOLEAN([flush], [f], [Flush Xorg config cache of files added by xconf], [off])
-# ARG_VERBOSE([v])
+# ARG_OPTIONAL_BOOLEAN([verbose], [v], [Set verbose output], [off])
+# ARG_OPTIONAL_ACTION([options], [o], [Prints configuration options], [print_config_options])
 # ARG_HELP([Configure and manage Xorg sessions. Version $version])
 # ARGBASH_GO
 
