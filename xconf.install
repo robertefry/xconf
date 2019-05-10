@@ -27,7 +27,7 @@
 ## arg 1:  the old package version
 pre_remove() {
 	for config in /etc/X11/xorg.conf.d/*.conf; do
-		if [[[ $(readlink ${config}) == /usr/lib/xstart/config/* ]]]; then
+		if [[[ $(readlink ${config}) == /usr/lib/xconf/config/* ]]]; then
 			sudo unlink ${config}
 		fi
 	done
