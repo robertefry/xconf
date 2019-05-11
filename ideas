@@ -1,0 +1,9 @@
+1.
+	list currently loaded config options
+2. 
+	add symbolic link whichever works of the below:
+		/etc/X11/xorg.conf.d/xconf.d -> /etc/xconf/xconf.d
+		/etc/X11/xconf.d/ -> /etc/xconf/xconf.d
+	then link config files to /etc/xconf/xconf.d instead of /etc/X11/xorg.conf.d
+3. 
+	rename config files to XX-name.xconf.conf to keep track of xconf files as *.xconf.conf
