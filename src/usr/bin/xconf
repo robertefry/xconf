@@ -30,6 +30,15 @@ add_config()
 	done
 }
 
+list_linked_config()
+{
+	printf '%s\n' "Currently linked configuration files include:"
+	cd /etc/X11/xorg.conf.d
+	for $config in *.conf; do
+		printf '\t%s\n' $config
+	done
+}
+
 print_config_options()
 {
 	printf '%s\n' "Configuration groups include:"
@@ -45,7 +54,8 @@ print_config_options()
 # ARG_OPTIONAL_BOOLEAN([startx],[x],[Start an Xorg session],[off])
 # ARG_OPTIONAL_BOOLEAN([flush],[f],[Flush Xorg config cache of files added by xconf],[off])
 # ARG_OPTIONAL_BOOLEAN([verbose],[v],[Set verbose output],[off])
-# ARG_OPTIONAL_ACTION([options],[o],[Print configuration options],[print_config_options])
+# ARG_OPTIONAL_ACTION([list],[l],[List currently linked configuration files],[list_linked_config])
+# ARG_OPTIONAL_ACTION([options],[o],[Prints configuration options],[print_config_options])
 # ARG_HELP([Configure and manage Xorg sessions. Version $version])
 # ARGBASH_GO()
 # needed because of Argbash --> m4_ignore([
@@ -66,7 +76,7 @@ die()
 
 begins_with_short_option()
 {
-	local first_option all_short_options='arxfvoh'
+	local first_option all_short_options='arxfvloh'
 	first_option="${1:0:1}"
 	test "$all_short_options" = "${all_short_options/$first_option/}" && return 1 || return 0
 }
@@ -82,14 +92,15 @@ _arg_verbose="off"
 print_help()
 {
 	printf '%s\n' "Configure and manage Xorg sessions. Version $version"
-	printf 'Usage: %s [-a|--add <arg>] [-r|--remove <arg>] [-x|--(no-)startx] [-f|--(no-)flush] [-v|--(no-)verbose] [-o|--options] [-h|--help]\n' "$0"
-	printf '\t%s\n' "-a, --add:     Add configuration files to Xorg config cache"
-	printf '\t%s\n' "-r, --remove:  Remove configuration files from Xorg config cache"
-	printf '\t%s\n' "-x, --startx:  Start an Xorg session"
-	printf '\t%s\n' "-f, --flush:   Flush Xorg config cache of files added by xconf"
-	printf '\t%s\n' "-v, --verbose: Set verbose output"
+	printf 'Usage: %s [-a|--add <arg>] [-r|--remove <arg>] [-x|--(no-)startx] [-f|--(no-)flush] [-v|--(no-)verbose] [-l|--list] [-o|--options] [-h|--help]\n' "$0"
+	printf '\t%s\n' "-a, --add: Add configuration files to Xorg config cache (empty by default)"
+	printf '\t%s\n' "-r, --remove: Remove configuration files from Xorg config cache (empty by default)"
+	printf '\t%s\n' "-x, --startx, --no-startx: Start an Xorg session (off by default)"
+	printf '\t%s\n' "-f, --flush, --no-flush: Flush Xorg config cache of files added by xconf (off by default)"
+	printf '\t%s\n' "-v, --verbose, --no-verbose: Set verbose output (off by default)"
+	printf '\t%s\n' "-l, --list: List currently linked configuration files"
 	printf '\t%s\n' "-o, --options: Prints configuration options"
-	printf '\t%s\n' "-h, --help:    Prints help"
+	printf '\t%s\n' "-h, --help: Prints help"
 }
 
 
@@ -156,6 +167,14 @@ parse_commandline()
 				then
 					begins_with_short_option "$_next" && shift && set -- "-v" "-${_next}" "$@" || die "The short option '$_key' can't be decomposed to ${_key:0:2} and -${_key:2}, because ${_key:0:2} doesn't accept value and '-${_key:2:1}' doesn't correspond to a short option."
 				fi
+				;;
+			-l|--list)
+				list_linked_config
+				exit 0
+				;;
+			-l*)
+				list_linked_config
+				exit 0
 				;;
 			-o|--options)
 				print_config_options

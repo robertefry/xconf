@@ -30,6 +30,15 @@ add_config()
 	done
 }
 
+list_linked_config()
+{
+	printf '%s\n' "Currently linked configuration files include:"
+	cd /etc/X11/xorg.conf.d
+	for $config in *.conf; do
+		printf '\t%s\n' $config
+	done
+}
+
 print_config_options()
 {
 	printf '%s\n' "Configuration groups include:"
@@ -47,6 +56,7 @@ exit 11  #)Created by argbash-init v2.8.0
 # ARG_OPTIONAL_BOOLEAN([startx], [x], [Start an Xorg session], [off])
 # ARG_OPTIONAL_BOOLEAN([flush], [f], [Flush Xorg config cache of files added by xconf], [off])
 # ARG_OPTIONAL_BOOLEAN([verbose], [v], [Set verbose output], [off])
+# ARG_OPTIONAL_ACTION([list], [l], [List currently linked configuration files], [list_linked_config])
 # ARG_OPTIONAL_ACTION([options], [o], [Prints configuration options], [print_config_options])
 # ARG_HELP([Configure and manage Xorg sessions. Version $version])
 # ARGBASH_GO
