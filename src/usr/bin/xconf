@@ -34,7 +34,7 @@ list_linked_config()
 {
 	printf '%s\n' "Currently linked configuration files include:"
 	cd /etc/X11/xorg.conf.d
-	for $config in *.conf; do
+	for config in *.conf; do
 		printf '\t%s\n' $config
 	done
 }
