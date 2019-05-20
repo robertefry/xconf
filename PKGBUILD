@@ -10,6 +10,11 @@ depends=('bash' 'sudo' 'xorg-xinit')
 install=xconf.install
 changelog=CHANGELOG
 
+build()
+{
+	ln "$srcdir"/../xconf/ "$srcdir"/
+}
+
 package()
 {
 	cd "$srcdir"
