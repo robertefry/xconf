@@ -10,15 +10,16 @@ depends=('bash' 'sudo' 'xorg-xinit')
 install=xconf.install
 changelog=CHANGELOG
 
-package() {
-	cd $srcdir
-	for file in $(find -L usr/bin -type f); do
-		install -Dm755 ${file} $pkgdir/${file}
+package()
+{
+	cd "$srcdir"
+	for file in $(find -L usr/bin/ -type f); do
+		install -Dm755 "$file" "$pkgdir"/"$file"
 	done
-	for file in $(find -L usr/lib -type f); do
-		install -Dm755 ${file} $pkgdir/${file}
+	for file in $(find -L usr/lib/ -type f); do
+		install -Dm755 "$file" "$pkgdir"/"$file"
 	done
-	for file in $(find -L usr/share -type f); do
-		install -Dm644 ${file} $pkgdir/${file}
+	for file in $(find -L usr/share/ -type f); do
+		install -Dm644 "$file" "$pkgdir"/"$file"
 	done
 }

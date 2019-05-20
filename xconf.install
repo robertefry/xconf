@@ -3,9 +3,9 @@
 # you don't need (and this header).
 
 ## arg 1:  the new package version
-#pre_install() {
-	# do something here
-#}
+pre_install() {
+	mkdir -p /etc/X11/xorg.conf.d/
+}
 
 ## arg 1:  the new package version
 #post_install() {
@@ -27,8 +27,8 @@
 ## arg 1:  the old package version
 pre_remove() {
 	for config in /etc/X11/xorg.conf.d/*.conf; do
-		if [[[ $(readlink ${config}) == /usr/lib/xconf/config/* ]]]; then
-			sudo unlink ${config}
+		if [[ $(readlink "$config") == /usr/lib/xconf/config/* ]]; then
+			sudo unlink "$config"
 		fi
 	done
 }

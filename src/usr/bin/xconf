@@ -5,34 +5,42 @@ version="1.0"
 flush()
 {
 	for config in /etc/X11/xorg.conf.d/*.conf; do
-		if [[ $(readlink $config) == /usr/lib/xconf/config/* ]]; then
+		if [[ $(readlink "$config") == /usr/lib/xconf/config/* ]]; then
 			if [[ $_arg_verbose == "on" ]]; then
 				printf '\t--> %s\n' "flushing $config"
 			fi
-			sudo unlink $config
+			sudo unlink "$config"
 		fi
 	done
 }
 
 remove_config()
 {
+	if [ ! -d /usr/lib/xconf/config/$1/ ]; then
+		printf '\t-->%s\n' "no such xconf configuration $1"
+		return
+	fi
 	for config in /etc/X11/xorg.conf.d/*.conf; do
-		if [[ $(readlink $config) == /usr/lib/xconf/config/$1/* ]]; then
+		if [[ $(readlink "$config") == /usr/lib/xconf/config/$1/* ]]; then
 			if [[ $_arg_verbose == "on" ]]; then
 				printf '\t--> %s\n' "unlinking $config"
 			fi
-			sudo unlink $config
+			sudo unlink "$config"
 		fi
 	done
 }
 
 add_config()
 {
+	if [ ! -d /usr/lib/xconf/config/$1/ ]; then
+		printf '\t-->%s\n' "no such xconf configuration $1"
+		return
+	fi
 	for config in /usr/lib/xconf/config/$1/*.conf; do
 		if [[ $_arg_verbose == "on" ]]; then
 			printf '\t--> %s\n' "linking $config"
 		fi
-		sudo ln -s $config /etc/X11/xorg.conf.d/
+		sudo ln -s "$config" /etc/X11/xorg.conf.d/
 	done
 }
 
@@ -49,7 +57,7 @@ print_config_options()
 	printf '%s\n' "Configuration groups include:"
 	cd /usr/lib/xconf/config
 	for config in */; do
-		printf '\t%s\n' $config
+		printf '\t%s\n' "$config"
 	done
 }
 
@@ -98,14 +106,14 @@ print_help()
 {
 	printf '%s\n' "Configure and manage Xorg sessions. Version $version"
 	printf 'Usage: %s [-a|--add <arg>] [-r|--remove <arg>] [-x|--(no-)startx] [-f|--(no-)flush] [-v|--(no-)verbose] [-l|--list] [-o|--options] [-h|--help]\n' "$0"
-	printf '\t%s\n' "-a, --add: Add configuration files to Xorg config cache (empty by default)"
-	printf '\t%s\n' "-r, --remove: Remove configuration files from Xorg config cache (empty by default)"
-	printf '\t%s\n' "-x, --startx, --no-startx: Start an Xorg session (off by default)"
-	printf '\t%s\n' "-f, --flush, --no-flush: Flush Xorg config cache of files added by xconf (off by default)"
-	printf '\t%s\n' "-v, --verbose, --no-verbose: Set verbose output (off by default)"
-	printf '\t%s\n' "-l, --list: List current Xorg configuration files"
+	printf '\t%s\n' "-a, --add:     Add configuration files to Xorg config cache"
+	printf '\t%s\n' "-r, --remove:  Remove configuration files from Xorg config cache"
+	printf '\t%s\n' "-x, --startx:  Start an Xorg session"
+	printf '\t%s\n' "-f, --flush:   Flush Xorg config cache of files added by xconf"
+	printf '\t%s\n' "-v, --verbose: Set verbose output"
+	printf '\t%s\n' "-l, --list:    List current Xorg configuration files"
 	printf '\t%s\n' "-o, --options: Prints configuration options"
-	printf '\t%s\n' "-h, --help: Prints help"
+	printf '\t%s\n' "-h, --help:    Prints help"
 }
 
 
@@ -213,8 +221,8 @@ parse_commandline "$@"
 # [ <-- needed because of Argbash
 
 if [[ $_arg_flush == "on" ]]; then flush; fi
-for config in $_arg_remove; do remove_config $config; done
-for config in $_arg_add; do add_config $config; done
+for config in $_arg_remove; do remove_config "$config"; done
+for config in $_arg_add; do add_config "$config"; done
 if [[ $_arg_startx == "on" ]]; then startx; fi
 
 # ] <-- needed because of Argbash

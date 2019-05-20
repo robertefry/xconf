@@ -5,34 +5,42 @@ version="1.0"
 flush()
 {
 	for config in /etc/X11/xorg.conf.d/*.conf; do
-		if [[[ $(readlink $config) == /usr/lib/xconf/config/* ]]]; then
+		if [[[ $(readlink "$config") == /usr/lib/xconf/config/* ]]]; then
 			if [[[ $_arg_verbose == "on" ]]]; then
 				printf '\t--> %s\n' "flushing $config"
 			fi
-			sudo unlink $config
+			sudo unlink "$config"
 		fi
 	done
 }
 
 remove_config()
 {
+	if [[ ! -d /usr/lib/xconf/config/$1/ ]]; then
+		printf '\t-->%s\n' "no such xconf configuration $1"
+		return
+	fi
 	for config in /etc/X11/xorg.conf.d/*.conf; do
-		if [[[ $(readlink $config) == /usr/lib/xconf/config/$1/* ]]]; then
+		if [[[ $(readlink "$config") == /usr/lib/xconf/config/$1/* ]]]; then
 			if [[[ $_arg_verbose == "on" ]]]; then
 				printf '\t--> %s\n' "unlinking $config"
 			fi
-			sudo unlink $config
+			sudo unlink "$config"
 		fi
 	done
 }
 
 add_config()
 {
+	if [[ ! -d /usr/lib/xconf/config/$1/ ]]; then
+		printf '\t-->%s\n' "no such xconf configuration $1"
+		return
+	fi
 	for config in /usr/lib/xconf/config/$1/*.conf; do
 		if [[[ $_arg_verbose == "on" ]]]; then
 			printf '\t--> %s\n' "linking $config"
 		fi
-		sudo ln -s $config /etc/X11/xorg.conf.d/
+		sudo ln -s "$config" /etc/X11/xorg.conf.d/
 	done
 }
 
@@ -49,7 +57,7 @@ print_config_options()
 	printf '%s\n' "Configuration groups include:"
 	cd /usr/lib/xconf/config
 	for config in */; do
-		printf '\t%s\n' $config
+		printf '\t%s\n' "$config"
 	done
 }
 
@@ -68,8 +76,8 @@ exit 11  #)Created by argbash-init v2.8.0
 
 # [ <-- needed because of Argbash
 if [[ $_arg_flush == "on" ]]; then flush; fi
-for config in $_arg_remove; do remove_config $config; done
-for config in $_arg_add; do add_config $config; done
+for config in $_arg_remove; do remove_config "$config"; done
+for config in $_arg_add; do add_config "$config"; done
 if [[ $_arg_startx == "on" ]]; then startx; fi
 
 # ] <-- needed because of Argbash
