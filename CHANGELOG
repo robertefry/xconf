@@ -1,0 +1,6 @@
+[1.1]
++ intel tearfree
++ intel vsync
+
+[1.2]
++ disable mouse acceleration
