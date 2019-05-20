@@ -1,6 +1,0 @@
-1.
-	list currently loaded config options
-2.
-	rename config files to <XX>-<name>.<config-set>.conf
-	put config all config files in /usr/lib/xconf/
-	add/remove config-set via search for *.<config-set>.conf

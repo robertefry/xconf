@@ -1,1 +1,0 @@
-argbash xconf/src/xconf.m4 > src/usr/bin/xconf
