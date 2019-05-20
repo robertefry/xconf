@@ -12,12 +12,12 @@ changelog=CHANGELOG
 
 build()
 {
-	ln "$srcdir"/../xconf/ "$srcdir"/
+	ln -sr "$srcdir"/../xconf/ "$srcdir"/
 }
 
 package()
 {
-	cd "$srcdir"
+	cd "$srcdir"/xconf/
 	for file in $(find -L usr/bin/ -type f); do
 		install -Dm755 "$file" "$pkgdir"/"$file"
 	done
