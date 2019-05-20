@@ -1,6 +1,6 @@
 # Maintainer: Robert E Fry <robert.e.fry@protonmail.com>
 pkgname=xconf
-pkgver=1.0
+pkgver=1.1
 pkgrel=1
 pkgdesc="Configure and manage Xorg sessions"
 arch=('any')
