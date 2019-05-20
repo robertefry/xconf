@@ -17,7 +17,9 @@ flush()
 remove_config()
 {
 	if [ ! -d /usr/lib/xconf/config/$1/ ]; then
-		printf '\t-->%s\n' "no such xconf configuration $1"
+		if [[ $_arg_verbose == "on" ]]; then
+			printf '\t-->%s\n' "no such xconf configuration $1"
+		fi
 		return
 	fi
 	for config in /etc/X11/xorg.conf.d/*.conf; do
@@ -33,7 +35,9 @@ remove_config()
 add_config()
 {
 	if [ ! -d /usr/lib/xconf/config/$1/ ]; then
-		printf '\t-->%s\n' "no such xconf configuration $1"
+		if [[ $_arg_verbose == "on" ]]; then
+			printf '\t-->%s\n' "no such xconf configuration $1"
+		fi
 		return
 	fi
 	for config in /usr/lib/xconf/config/$1/*.conf; do
