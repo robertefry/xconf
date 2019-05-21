@@ -109,7 +109,7 @@ _arg_verbose="off"
 print_help()
 {
 	printf '%s\n' "Configure and manage Xorg sessions. Version $version"
-	printf 'Usage: %s [-a|--add <arg>] [-r|--remove <arg>] [-x|--(no-)startx] [-f|--(no-)flush] [-v|--(no-)verbose] [-l|--list] [-o|--options] [-h|--help]\n' "$0"
+	printf 'Usage: %s [-a|--add <arg>] [-r|--remove <arg>] [-x|--startx] [-f|--flush] [-v|--verbose] [-l|--list] [-o|--options] [-h|--help]\n' "$0"
 	printf '\t%s\n' "-a, --add:     Add configuration files to Xorg config cache"
 	printf '\t%s\n' "-r, --remove:  Remove configuration files from Xorg config cache"
 	printf '\t%s\n' "-x, --startx:  Start an Xorg session"
